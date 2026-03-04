@@ -32,27 +32,34 @@ video:hover {
 
 <script>
 const videos = [
-  { src: "video1.mp4", type: "portrait", scale: 1.0 },
-  { src: "video2.mp4", type: "portrait", scale: 1.2 },
-  { src: "video3.mp4", type: "portrait", scale: 0.8 },
-  { src: "video4.mp4", type: "portrait", scale: 1.5 },
-  { src: "video5.mp4", type: "portrait", scale: 1.0 },
-  { src: "video6.mp4", type: "portrait", scale: 1.1 },
-  { src: "video7.mp4", type: "landscape", scale: 1.0 },
+  { src: "video1.mp4", type: "portrait", scale: 2.0 },
+  { src: "video2.mp4", type: "portrait", scale: 2.4 },
+  { src: "video3.mp4", type: "portrait", scale: 1.6 },
+  { src: "video4.mp4", type: "portrait", scale: 3.0 },
+  { src: "video5.mp4", type: "portrait", scale: 2.0 },
+  { src: "video6.mp4", type: "portrait", scale: 2.2 },
+  { src: "video7.mp4", type: "landscape", scale: 2.0 },
   { src: "video8.mp4", type: "landscape", scale: 1.3 },
   { src: "video9.mp4", type: "landscape", scale: 0.9 },
-  { src: "video10.mp4", type: "landscape", scale: 1.4 }
+  { src: "video10.mp4", type: "landscape", scale: 0.8 }
 ];
 
-const globalBaseScale = 1.0; 
+// --- SMART MOBILE DETECTION ---
+// This checks if the screen is narrower than 768px (standard mobile width)
+const isMobile = window.innerWidth < 768;
+
+// If on mobile, make videos 3.5x bigger! If on PC, keep them standard.
+const globalBaseScale = isMobile ? 3.5 : 1.0; 
+
+// If on mobile, use 2 columns and 5 rows. If on PC, use 5 columns and 2 rows.
+const cols = isMobile ? 2 : 5; 
+const rows = isMobile ? 5 : 2; 
+
 const paddingLeft = 2;   
 const paddingRight = 2;  
 const paddingTop = 2;    
 const paddingBottom = 2; 
-
-// --- GRID SETTINGS FOR SCATTERING ---
-const cols = 5; // 5 columns
-const rows = 2; // 2 rows (5x2 = 10 spots for your 10 videos)
+// ------------------------------
 
 videos.forEach((vidData, index) => {
   const vid = document.createElement("video");
@@ -66,31 +73,25 @@ videos.forEach((vidData, index) => {
   let finalWidth = baseWidthVW * vidData.scale * globalBaseScale;
   vid.style.width = finalWidth + "vw";
 
-  // Calculate the size of each invisible grid cell
   let cellWidthVW = 100 / cols; 
   let cellHeightVH = 100 / rows; 
 
-  // Figure out which cell this specific video belongs in
   let col = index % cols;
   let row = Math.floor(index / cols);
 
-  // Calculate how much random wiggle room it has inside its cell without overflowing
-  let maxOffsetX = cellWidthVW - finalWidth; 
-  let maxOffsetY = cellHeightVH - 35; // 35vh is roughly the max height a video will take
+  // Math.max(0, ...) ensures the wiggle room NEVER drops below zero, 
+  // which prevents the "locked in place" bug you saw on mobile!
+  let assumedHeightVH = isMobile ? 15 : 35; 
+  let maxOffsetX = Math.max(0, cellWidthVW - finalWidth); 
+  let maxOffsetY = Math.max(0, cellHeightVH - assumedHeightVH); 
 
-  // Prevent errors if the video is scaled up larger than the cell itself
-  if (maxOffsetX < 0) maxOffsetX = 0;
-  if (maxOffsetY < 0) maxOffsetY = 0;
-
-  // Add the base cell position + the random wiggle room
   let randomLeft = (col * cellWidthVW) + (Math.random() * maxOffsetX);
   let randomTop = (row * cellHeightVH) + (Math.random() * maxOffsetY);
 
-  // Keep it safely inside the absolute edges of the screen
   if (randomLeft < paddingLeft) randomLeft = paddingLeft;
   if (randomLeft > 100 - paddingRight - finalWidth) randomLeft = 100 - paddingRight - finalWidth;
   if (randomTop < paddingTop) randomTop = paddingTop;
-  if (randomTop > 100 - paddingBottom - 35) randomTop = 100 - paddingBottom - 35;
+  if (randomTop > 100 - paddingBottom - assumedHeightVH) randomTop = 100 - paddingBottom - assumedHeightVH;
 
   vid.style.left = randomLeft + "vw";
   vid.style.top = randomTop + "vh";
