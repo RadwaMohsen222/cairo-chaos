@@ -6,6 +6,9 @@
 <style>
 body {
   margin: 0;
+  padding: 0;
+  width: 100vw;  /* Forces the background to stretch fully */
+  height: 100vh; /* Forces the background to stretch fully */
   overflow: hidden;
   background: rgb(219,224,241);
 }
@@ -41,15 +44,15 @@ const videos = [
   { src: "video10.mp4", type: "landscape", scale: 0.8 }
 ];
 
+// If they still look too small inside the box, increase this number (e.g., to 1.5 or 2.0)!
 const globalBaseScale = 1.0; 
 
 // --- THE INVISIBLE FRAME SETTINGS ---
-// Adjust these numbers to make the "thick borders" bigger or smaller. 
-// These are in percentages (vw/vh). For example, 20 means 20% of the screen.
-const paddingLeft = 20;   // Keeps videos 20% away from the left edge
-const paddingRight = 20;  // Keeps videos 20% away from the right edge
-const paddingTop = 15;    // Keeps videos 15% away from the top edge
-const paddingBottom = 15; // Keeps videos 15% away from the bottom edge
+// Reduced to 2% just so the videos don't clip through the exact edge of the box
+const paddingLeft = 2;   
+const paddingRight = 2;  
+const paddingTop = 2;    
+const paddingBottom = 2; 
 // ------------------------------------
 
 videos.forEach((vidData) => {
@@ -65,12 +68,9 @@ videos.forEach((vidData) => {
   let finalWidth = baseWidthVW * vidData.scale * globalBaseScale;
   vid.style.width = finalWidth + "vw";
 
-  // Calculate the actual safe zone width and height
-  // We subtract the video's size so the *right/bottom edges* don't cross the boundary
   let maxAllowedLeft = (100 - paddingRight) - finalWidth; 
   let maxAllowedTop = (100 - paddingBottom) - 30; // Assuming ~30vh as max video height
 
-  // Generate random positions strictly within the padded zone
   let randomLeft = paddingLeft + (Math.random() * (maxAllowedLeft - paddingLeft));
   let randomTop = paddingTop + (Math.random() * (maxAllowedTop - paddingTop));
 
@@ -85,4 +85,3 @@ videos.forEach((vidData) => {
 
 </body>
 </html>
-
