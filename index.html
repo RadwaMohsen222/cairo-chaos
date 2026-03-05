@@ -49,7 +49,7 @@ const videos = [
 const isMobile = window.innerWidth < 768;
 
 // If on mobile, make videos 3.5x bigger! If on PC, keep them standard.
-const globalBaseScale = isMobile ? 3.5 : 1.0; 
+const globalBaseScale = isMobile ? 0.5 : 1.0; 
 
 // If on mobile, use 2 columns and 5 rows. If on PC, use 5 columns and 2 rows.
 const cols = isMobile ? 2 : 5; 
@@ -104,3 +104,4 @@ videos.forEach((vidData, index) => {
 
 </body>
 </html>
+
